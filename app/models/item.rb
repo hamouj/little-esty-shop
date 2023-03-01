@@ -22,13 +22,4 @@ class Item < ApplicationRecord
 		.order("revenue DESC")
 		.limit(5)
 	end
-
-	def best_day
-		Item.joins(:transactions)
-		.select("invoices.created_at as invoice_date, COUNT(invoices.created_at) as invoice_count")
-		.where(id: self.id, transactions: {result: 0})
-		.group("invoices.created_at")
-		.order(invoice_count: :desc, invoice_date: :desc)
-		.first.invoice_date.strftime("%m/%d/%Y")
-	end
 end

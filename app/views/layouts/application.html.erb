@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>LittleEstyShop</title>
+    <title>LittleEtsyShop</title>
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
@@ -9,20 +9,12 @@
     <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
   </head>
 
-  <body> 
+  <body>
 		<% flash.each do |type, msg| %>
 			<div>
 				<%= msg %>
 			</div>
     <% end %>
-    
-    <h1><%= @repo_name.name %></h1>
-    <h3>Collaborators</h3>
-    <% @users.each do |user| %>
-      <p><%= user.username %> - <%= user.commit_count %> Commits</p>
-    <% end %>
-    <p><%= @pull_requests %> merged pull requests</p>
-
     <%= yield %>
-  </body> 
+  </body>
 </html>
