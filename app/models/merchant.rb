@@ -25,7 +25,7 @@ class Merchant < ApplicationRecord
 
   def self.top_five_merchant_by_rev
     joins(:transactions)
-		.where(transactions: {result: 0})
+		.where(transactions: {result: 0}, invoices: {status: 'completed'})
 		.select("merchants.*, SUM(invoice_items.unit_price*invoice_items.quantity) as revenue")
 		.group(:id)
 		.order("revenue DESC")
@@ -33,7 +33,6 @@ class Merchant < ApplicationRecord
   end
 
   def date_with_most_revenue
-    # require 'pry'; binding.pry
     invoices
     .where(status: "completed")
     .select("invoices.created_at, SUM(invoice_items.unit_price * invoice_items.quantity) as revenue")
@@ -41,6 +40,5 @@ class Merchant < ApplicationRecord
     .order(revenue: :desc)
     .limit(1)
     .first.created_at.strftime("%m/%d/%Y")
-    
   end
 end
