@@ -11,7 +11,6 @@ RSpec.describe 'merchant show dashboard page', type: :feature do
     let!(:customer5) { create(:customer)}
     let!(:customer6) { create(:customer)}
   
-
     let!(:invoice1) { create(:completed_invoice, customer: customer1, created_at: Date.new(2014, 3, 1))}
     let!(:invoice2) { create(:completed_invoice, customer: customer1,  created_at: Date.new(2012, 3, 1))}
     let!(:invoice3) { create(:completed_invoice, customer: customer2)} 
@@ -69,8 +68,7 @@ RSpec.describe 'merchant show dashboard page', type: :feature do
       create(:invoice_item, item: item4, invoice: invoice11)
 
     end
-    
-
+  
     it 'shows my name(merchant)' do
       visit "/merchants/#{merchant1.id}/dashboard"
 
