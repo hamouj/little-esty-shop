@@ -4,13 +4,14 @@ Rails.application.routes.draw do
   resources :admin, only: :index
 
   namespace :admin do
-    resources :merchants, only: [:index, :show, :edit, :update, :new, :create]
+    resources :merchants, only: [:index, :show, :edit, :new, :create]
 		resources :invoices, only: [:index, :show]
   end
 
 	resources :merchants, only: :show do
 		resources :items, except: :update, controller: 'merchant/items'
     resources :invoices, only: [:index, :show], controller: 'merchant/invoices'
+    resources :bulk_discounts, only: [:index, :show], controller: 'merchant/bulk_discounts'
 	end
 
   patch '/merchants/:merchant_id/invoices/:id', to: 'merchant/invoice_items#update'

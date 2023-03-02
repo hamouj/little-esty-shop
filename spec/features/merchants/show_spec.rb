@@ -42,17 +42,22 @@ RSpec.describe 'merchant show dashboard page', type: :feature do
     let!(:transaction12) {create(:transaction, invoice: invoice10) }
     let!(:transaction13) {create(:transaction, invoice: invoice11) }
     
-    before do
+    before (:each) do
       create(:invoice_item, item: item1, invoice: invoice1)
       create(:invoice_item, item: item2, invoice: invoice1)
+
       create(:invoice_item, item: item1, invoice: invoice2)
       create(:invoice_item, item: item4, invoice: invoice2)
+
       create(:invoice_item, item: item4, invoice: invoice3)
       create(:invoice_item, item: item3, invoice: invoice3)
+
       create(:invoice_item, item: item1, invoice: invoice4)
       create(:invoice_item, item: item4, invoice: invoice4)
+
       create(:invoice_item, item: item1, invoice: invoice5)
       create(:invoice_item, item: item2, invoice: invoice5)
+
       create(:invoice_item, item: item2, invoice: invoice6)
       create(:invoice_item, item: item3, invoice: invoice6)
       
@@ -60,13 +65,15 @@ RSpec.describe 'merchant show dashboard page', type: :feature do
 
       create(:invoice_item, item: item1, invoice: invoice8)
       create(:invoice_item, item: item3, invoice: invoice8)
+
       create(:invoice_item, item: item2, invoice: invoice9)
       create(:invoice_item, item: item3, invoice: invoice9)
+
       create(:invoice_item, item: item3, invoice: invoice10)
       create(:invoice_item, item: item4, invoice: invoice10)
+
       create(:invoice_item, item: item1, invoice: invoice11)
       create(:invoice_item, item: item4, invoice: invoice11)
-
     end
   
     it 'shows my name(merchant)' do
@@ -158,6 +165,20 @@ RSpec.describe 'merchant show dashboard page', type: :feature do
       expect(page).to have_content(invoice4.created_at.strftime"%A, %B %d, %Y")
       expect(page).to have_content(invoice5.created_at.strftime"%A, %B %d, %Y")
       expect(page).to have_content(invoice6.created_at.strftime"%A, %B %d, %Y")
+    end
+
+    it 'has a link to view all discounts' do
+      visit "/merchants/#{merchant1.id}/dashboard"
+
+      expect(page).to have_link("Merchant Discounts", href: "/merchants/#{merchant1.id}/bulk_discounts")
+    end
+
+    it 'when I clikc the link to view all discounts, I am taken to my bulk discounts index page' do
+      visit "/merchants/#{merchant1.id}/dashboard"
+
+      click_link "Merchant Discounts"
+
+      expect(current_path).to eq("/merchants/#{merchant1.id}/bulk_discounts")
     end
   end
 end
