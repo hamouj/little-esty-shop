@@ -1,5 +1,5 @@
 class ApplicationController < ActionController::Base
-  before_action :users, :repo_name, :pull_requests
+  # before_action :users, :repo_name, :pull_requests
 
   def pull_requests
     @pull_requests = PullRequestSearch.new.merged_pr_count

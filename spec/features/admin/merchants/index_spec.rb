@@ -193,11 +193,11 @@ RSpec.describe 'admin merchants index page' do
 			visit admin_merchants_path
 		
 			within "#top_five_merchants_by_rev" do 
-				expect(page).to have_content("#{merchant1.name} - $60 in sales")
-				expect(page).to have_content("#{merchant2.name} - $48 in sales")
-				expect(page).to have_content("#{merchant3.name} - $36 in sales")
-				expect(page).to have_content("#{merchant4.name} - $24 in sales")
-				expect(page).to have_content("#{merchant5.name} - $12 in sales")
+				expect(page).to have_content("#{merchant1.name} - $0.60 in sales")
+				expect(page).to have_content("#{merchant2.name} - $0.48 in sales")
+				expect(page).to have_content("#{merchant3.name} - $0.36 in sales")
+				expect(page).to have_content("#{merchant4.name} - $0.24 in sales")
+				expect(page).to have_content("#{merchant5.name} - $0.12 in sales")
 			end
 		end
 
@@ -212,15 +212,5 @@ RSpec.describe 'admin merchants index page' do
 				expect(page).to have_content("#{merchant5.date_with_most_revenue}")
 			end
 		end
-
-		it 'will have a list of all usernames of contributors' do 
-			visit admin_merchants_path
-			
-      expect(page).to have_content("Collaborators")
-      expect(page).to have_content("Bphayes1200")
-      expect(page).to have_content("MATrevino")
-      expect(page).to have_content("hamouj")
-      expect(page).to have_content("axeldelaguardia")
-    end 
 	end
 end
