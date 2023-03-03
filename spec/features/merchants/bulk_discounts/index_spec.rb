@@ -1,7 +1,7 @@
 require 'rails_helper' 
 
 
-describe 'As a Merchant' do
+describe 'As a Merchant', type: :feature do
   before(:each) do
     @merchant_1 = create(:merchant)
     @merchant_2 = create(:merchant)
@@ -44,6 +44,17 @@ describe 'As a Merchant' do
       click_link "#{@bulk_discount_1.id}"
 
       expect(current_path).to eq("/merchants/#{@merchant_1.id}/bulk_discounts/#{@bulk_discount_1.id}")
+    end
+
+    it 'I see a link to create a new discount' do
+      visit merchant_bulk_discounts_path(@merchant_1)
+
+      within '#add_discount' do
+        expect(page).to have_link("Create a New Discount", href: new_merchant_bulk_discount_path(@merchant_1))
+        click_link "Create a New Discount"
+      end
+
+      expect(current_path).to eq(new_merchant_bulk_discount_path(@merchant_1))
     end
   end
 end
