@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe 'As a merchant' do
+describe 'As a merchant', type: :feature do
   before(:each) do
     @merchant_1 = create(:merchant)
     @merchant_2 = create(:merchant)
