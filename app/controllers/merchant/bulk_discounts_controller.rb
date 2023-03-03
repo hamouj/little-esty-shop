@@ -15,12 +15,21 @@ class Merchant::BulkDiscountsController < ApplicationController
   def create
     merchant = Merchant.find(params[:merchant_id])
     new_discount = merchant.bulk_discounts.new(bulk_discount_params)
+    
     if new_discount.save
       redirect_to merchant_bulk_discounts_path(merchant)
     else
       flash[:notice] = error_message(new_discount.errors)
       redirect_to new_merchant_bulk_discount_path(merchant)
     end
+  end
+
+  def destroy
+    merchant = Merchant.find(params[:merchant_id]) 
+
+    BulkDiscount.destroy(params[:id])
+
+    redirect_to merchant_bulk_discounts_path(merchant)
   end
 
 private
