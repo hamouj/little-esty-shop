@@ -20,5 +20,11 @@ describe 'As a merchant', type: :feature do
 
       expect(current_path).to eq(merchant_bulk_discount_path(@merchant_1, @bulk_discount_2))
     end
+
+    it "I see the bulk discount's quantity threshold and percentage discount" do
+      visit merchant_bulk_discount_path(@merchant_1, @bulk_discount_1)
+
+      expect(page).to have_content("#{@bulk_discount_1.percent_discount}% off #{@bulk_discount_1.quantity_threshold} items")
+    end
   end
 end
