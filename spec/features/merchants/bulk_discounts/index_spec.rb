@@ -90,5 +90,18 @@ describe 'As a Merchant', type: :feature do
         expect(page).to_not have_content("#{@bulk_discount_2.percent_discount}% off #{@bulk_discount_2.quantity_threshold} items")
       end
     end
+
+    it 'I see a section with a header of Upcoming Holidays and the name/date of the next 3 US holidays' do
+      upcoming_holidays = HolidaySearch.new.upcoming_holidays
+
+      visit merchant_bulk_discounts_path(@merchant_1)
+
+      within '#upcoming_holidays' do
+        expect(page).to have_content("Upcoming Holidays")
+        expect(page).to have_content("#{upcoming_holidays.first.name} - #{upcoming_holidays.first.date}")
+        expect(page).to have_content("#{upcoming_holidays.second.name} - #{upcoming_holidays.second.date}")
+        expect(page).to have_content("#{upcoming_holidays.last.name} - #{upcoming_holidays.last.date}")
+      end
+    end
   end
 end
