@@ -1,22 +1,32 @@
 <h1><%= @merchant.name %>'s Discounts</h1>
 <h3>Bulk Discounts</h3>
+
 <div id = bulk_discounts>
-<table>
-  <tr>
-    <th>Discount</th>
-    <th>Link</th>
-    <th>Delete?</th>
-  </tr>
-  <% @bulk_discounts.each do |discount| %>
+  <table>
     <tr>
-      <td><%= discount.percent_discount %>% off <%= discount.quantity_threshold %> items</td>
-      <td><%= link_to "#{discount.id}", merchant_bulk_discount_path(@merchant, discount) %></td>
-      <td><%= link_to "Delete #{discount.id}", merchant_bulk_discount_path(@merchant, discount), method: 'delete' %></td>
+      <th>Discount</th>
+      <th>Link</th>
+      <th>Delete?</th>
     </tr>
-  <% end %>
-</table>
+    <% @bulk_discounts.each do |discount| %>
+      <tr>
+        <td><%= discount.percent_discount %>% off <%= discount.quantity_threshold %> items</td>
+        <td><%= link_to "#{discount.id}", merchant_bulk_discount_path(@merchant, discount) %></td>
+        <td><%= link_to "Delete #{discount.id}", merchant_bulk_discount_path(@merchant, discount), method: 'delete' %></td>
+      </tr>
+    <% end %>
+  </table>
 </div>
-<br>
+
+<div id="upcoming_holidays">
+  <h3>Upcoming Holidays</h3>
+  <ul>
+  <% @upcoming_holidays.each do |holiday| %>
+    <li><%= holiday.name %> - <%= holiday.date %></li>
+    <% end %>
+  </ul>
+</div>
+
 <div id="add_discount">
   <%= link_to "Create a New Discount", new_merchant_bulk_discount_path(@merchant) %>
 </div>
