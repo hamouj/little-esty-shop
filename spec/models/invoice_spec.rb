@@ -61,6 +61,15 @@ RSpec.describe Invoice, type: :model do
   end
 
   describe 'instance_methods' do
+    describe 'items_for_merchant()' do
+      it 'returns a list of items that belong to a merchant for a specific invoice' do
+        create(:invoice_item, invoice: invoice2, item: item6)
+
+        expect(invoice2.items_for_merchant(merchant1)).to eq([item2, item3])
+        expect(invoice2.items_for_merchant(merchant2)).to eq([item6])
+      end
+    end
+
     describe '#total_revenue' do
       it 'returns the total revenue generated for an invoice' do
         revenue = (invoice_item1.unit_price * invoice_item1.quantity)
