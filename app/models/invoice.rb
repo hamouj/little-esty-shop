@@ -24,7 +24,6 @@ class Invoice < ApplicationRecord
   end
 
   def merchant_total_discounts(merchant)
-    require 'pry'; binding.pry
     inner_query = 
     items_for_merchant(merchant)
     .joins(:invoice_items, :bulk_discounts)
