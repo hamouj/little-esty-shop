@@ -108,24 +108,24 @@ RSpec.describe Invoice, type: :model do
         # single bulk_discount for merchant1
         total_discount = (invoice_item15.unit_price * 0.20 * 5) + (invoice_item16.unit_price * 0.20 * 8)
 
-        expect(invoice1.total_discounts(merchant1).round(2)).to eq(total_discount.round(2))
+        expect(invoice1.total_discounts(merchant1)).to eq(total_discount)
 
         # two bulk_discounts for merchant1
         merchant1.bulk_discounts.create!(percent_discount: 30, quantity_threshold: 7)
 
         total_discount2 = (invoice_item15.unit_price * 0.20 * 5) + (invoice_item16.unit_price * 0.30 * 8)
 
-        expect(invoice1.total_discounts(merchant1).round(2)).to eq(total_discount2.round(2))
+        expect(invoice1.total_discounts(merchant1)).to eq(total_discount2)
 
         # three bulk_discounts for merchant1, but one has a lower percent_discount and larger quantity_threshold (never applied)
         merchant1.bulk_discounts.create!(percent_discount:15, quantity_threshold: 8)
 
-        expect(invoice1.total_discounts(merchant1).round(2)).to eq(total_discount2.round(2))
+        expect(invoice1.total_discounts(merchant1)).to eq(total_discount2)
 
         # single bulk_discount for merchant 2 (never applied to total_discounts(merchant1))
         merchant2.bulk_discounts.create!(percent_discount:10, quantity_threshold: 3)
 
-        expect(invoice1.total_discounts(merchant1).round(2)).to eq(total_discount2.round(2))
+        expect(invoice1.total_discounts(merchant1)).to eq(total_discount2)
       end
     end
 
