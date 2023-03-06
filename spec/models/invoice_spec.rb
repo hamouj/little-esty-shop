@@ -61,6 +61,15 @@ RSpec.describe Invoice, type: :model do
   end
 
   describe 'instance_methods' do
+    describe 'items_for_merchant()' do
+      it 'returns a list of items that belong to a merchant for a specific invoice' do
+        create(:invoice_item, invoice: invoice2, item: item6)
+
+        expect(invoice2.items_for_merchant(merchant1)).to eq([item2, item3])
+        expect(invoice2.items_for_merchant(merchant2)).to eq([item6])
+      end
+    end
+
     describe '#total_revenue' do
       it 'returns the total revenue generated for an invoice' do
         revenue = (invoice_item1.unit_price * invoice_item1.quantity)
@@ -99,24 +108,24 @@ RSpec.describe Invoice, type: :model do
         # single bulk_discount for merchant1
         total_discount = (invoice_item15.unit_price * 0.20 * 5) + (invoice_item16.unit_price * 0.20 * 8)
 
-        expect(invoice1.total_discounts(merchant1).round(2)).to eq(total_discount.round(2))
+        expect(invoice1.total_discounts(merchant1)).to eq(total_discount)
 
         # two bulk_discounts for merchant1
         merchant1.bulk_discounts.create!(percent_discount: 30, quantity_threshold: 7)
 
         total_discount2 = (invoice_item15.unit_price * 0.20 * 5) + (invoice_item16.unit_price * 0.30 * 8)
 
-        expect(invoice1.total_discounts(merchant1).round(2)).to eq(total_discount2.round(2))
+        expect(invoice1.total_discounts(merchant1)).to eq(total_discount2)
 
         # three bulk_discounts for merchant1, but one has a lower percent_discount and larger quantity_threshold (never applied)
         merchant1.bulk_discounts.create!(percent_discount:15, quantity_threshold: 8)
 
-        expect(invoice1.total_discounts(merchant1).round(2)).to eq(total_discount2.round(2))
+        expect(invoice1.total_discounts(merchant1)).to eq(total_discount2)
 
         # single bulk_discount for merchant 2 (never applied to total_discounts(merchant1))
         merchant2.bulk_discounts.create!(percent_discount:10, quantity_threshold: 3)
 
-        expect(invoice1.total_discounts(merchant1).round(2)).to eq(total_discount2.round(2))
+        expect(invoice1.total_discounts(merchant1)).to eq(total_discount2)
       end
     end
 
