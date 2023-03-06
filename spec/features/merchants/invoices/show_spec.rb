@@ -45,6 +45,7 @@ describe 'As a merchant', type: :feature do
 
     it "I see all of my items on the invoice including: item name, quantity of item ordered, the price sold for, the invoice item status" do
       visit "/merchants/#{merchant1.id}/invoices/#{invoice1.id}"
+
       expect(page).to have_content("Items on this invoice")
       expect(page).to have_content("Item Name")
       expect(page).to have_content("Quantity")
@@ -121,6 +122,29 @@ describe 'As a merchant', type: :feature do
 
       within '#discounted_revenue' do
         expect(page).to have_content("Discounted Revenue: $#{(discounted_revenue/100.0).round(2)}")
+      end
+    end
+
+    it 'next to each invoice item I see a link to the show page for the bulk discount that was applied (if any)' do
+      bulk_discount1 = merchant1.bulk_discounts.create!(percent_discount: 10, quantity_threshold: 3)
+      bulk_discount2 = merchant1.bulk_discounts.create!(percent_discount: 15, quantity_threshold: 5)
+
+      visit "/merchants/#{merchant1.id}/invoices/#{invoice1.id}"
+
+      within "#bulk_discount#{@invoice_item1.id}" do
+        expect(page).to have_no_link
+      end
+
+      within "#bulk_discount#{@invoice_item2.id}" do
+        expect(page).to have_link("Bulk Discount #{bulk_discount1.id}", href: merchant_bulk_discount_path(merchant1, bulk_discount1))
+      end
+
+      within "#bulk_discount#{@invoice_item3.id}" do
+        expect(page).to have_link("Bulk Discount #{bulk_discount2.id}", href: merchant_bulk_discount_path(merchant1, bulk_discount2))
+      end
+
+      within "#bulk_discount#{@invoice_item4.id}" do
+        expect(page).to have_link("Bulk Discount #{bulk_discount2.id}", href: merchant_bulk_discount_path(merchant1, bulk_discount2))
       end
     end
   end
