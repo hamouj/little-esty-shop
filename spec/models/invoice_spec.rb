@@ -70,18 +70,6 @@ RSpec.describe Invoice, type: :model do
       end
     end
 
-    describe '#total_revenue' do
-      it 'returns the total revenue generated for an invoice' do
-        revenue = (invoice_item1.unit_price * invoice_item1.quantity)
-        
-        expect(invoice1.total_revenue).to eq(revenue)
-       
-        revenue_2 = (invoice_item2.unit_price * invoice_item2.quantity) + (invoice_item3.unit_price * invoice_item3.quantity)
-
-        expect(invoice2.total_revenue).to eq(revenue_2)        
-      end
-    end
-
     describe '#merchant_total_revenue()' do
       it 'returns the total revenue generated for a merchant from an invoice' do
         invoice_item15 = create(:invoice_item, invoice: invoice1, item: item2)
@@ -97,8 +85,8 @@ RSpec.describe Invoice, type: :model do
       end
     end
 
-    describe '#total_discounts()' do
-      it 'returns the total discounts applied to invoice items' do
+    describe '#merchant_total_discounts()' do
+      it 'returns the total discounts applied to invoice items for a specific merchant' do
         merchant1.bulk_discounts.create!(percent_discount: 20, quantity_threshold: 5)
         invoice_item15 = create(:invoice_item, invoice: invoice1, item: item2, status: 0, quantity: 5)
         invoice_item16 = create(:invoice_item, invoice: invoice1, item: item3, status: 0, quantity: 8)
@@ -108,28 +96,28 @@ RSpec.describe Invoice, type: :model do
         # single bulk_discount for merchant1
         total_discount = (invoice_item15.unit_price * 0.20 * 5) + (invoice_item16.unit_price * 0.20 * 8)
 
-        expect(invoice1.total_discounts(merchant1)).to eq(total_discount)
+        expect(invoice1.merchant_total_discounts(merchant1)).to eq(total_discount)
 
         # two bulk_discounts for merchant1
         merchant1.bulk_discounts.create!(percent_discount: 30, quantity_threshold: 7)
 
         total_discount2 = (invoice_item15.unit_price * 0.20 * 5) + (invoice_item16.unit_price * 0.30 * 8)
 
-        expect(invoice1.total_discounts(merchant1)).to eq(total_discount2)
+        expect(invoice1.merchant_total_discounts(merchant1)).to eq(total_discount2)
 
         # three bulk_discounts for merchant1, but one has a lower percent_discount and larger quantity_threshold (never applied)
         merchant1.bulk_discounts.create!(percent_discount:15, quantity_threshold: 8)
 
-        expect(invoice1.total_discounts(merchant1)).to eq(total_discount2)
+        expect(invoice1.merchant_total_discounts(merchant1)).to eq(total_discount2)
 
         # single bulk_discount for merchant 2 (never applied to total_discounts(merchant1))
         merchant2.bulk_discounts.create!(percent_discount:10, quantity_threshold: 3)
 
-        expect(invoice1.total_discounts(merchant1)).to eq(total_discount2)
+        expect(invoice1.merchant_total_discounts(merchant1)).to eq(total_discount2)
       end
     end
 
-    describe '#discounted_revenue()' do
+    describe '#merchant_discounted_revenue()' do
       it "returns the discounted revenue for a merchant's invoice items" do
         merchant1.bulk_discounts.create!(percent_discount: 20, quantity_threshold: 5)
         invoice_item15 = create(:invoice_item, invoice: invoice1, item: item2, status: 0, quantity: 5)
@@ -139,14 +127,71 @@ RSpec.describe Invoice, type: :model do
         total_discount = (invoice_item15.unit_price * 0.20 * 5) + (invoice_item16.unit_price * 0.20 * 8)
         discounted_revenue = total_revenue - total_discount
 
-        expect(invoice1.discounted_revenue(merchant1)).to eq(discounted_revenue)
+        expect(invoice1.merchant_discounted_revenue(merchant1)).to eq(discounted_revenue)
 
         merchant2.bulk_discounts.create!(percent_discount:10, quantity_threshold: 3)
         invoice_item17 = create(:invoice_item, invoice: invoice1, item: item6, status: 0, quantity: 8)
 
         discounted_revenue_2 = (invoice_item17.unit_price * invoice_item17.quantity) - (invoice_item17.unit_price * 0.10 * 8)
 
-        expect(invoice1.discounted_revenue(merchant2)).to eq(discounted_revenue_2)
+        expect(invoice1.merchant_discounted_revenue(merchant2)).to eq(discounted_revenue_2)
+      end
+    end
+
+    describe '#total_revenue' do
+      it 'returns the total revenue generated for an invoice' do
+        revenue = (invoice_item1.unit_price * invoice_item1.quantity)
+        
+        expect(invoice1.total_revenue).to eq(revenue)
+       
+        revenue_2 = (invoice_item2.unit_price * invoice_item2.quantity) + (invoice_item3.unit_price * invoice_item3.quantity)
+
+        expect(invoice2.total_revenue).to eq(revenue_2)        
+      end
+    end
+
+    describe '#total_discounts' do
+      it 'returns the total discount for an invoice' do
+        merchant1.bulk_discounts.create!(percent_discount: 20, quantity_threshold: 5)
+        merchant2.bulk_discounts.create!(percent_discount:10, quantity_threshold: 3)
+
+        invoice_item15 = create(:invoice_item, invoice: invoice1, item: item2, status: 0, quantity: 5)
+        invoice_item16 = create(:invoice_item, invoice: invoice1, item: item3, status: 0, quantity: 8)
+        invoice_item17 = create(:invoice_item, invoice: invoice1, item: item6, status: 0, quantity: 8)
+
+        total_discount = (invoice_item15.unit_price * 0.20 * 5) + (invoice_item16.unit_price * 0.20 * 8) + (invoice_item17.unit_price * 0.10 * 8)
+
+        expect(invoice1.total_discounts).to eq(total_discount)
+
+        merchant2.bulk_discounts.create!(percent_discount:20, quantity_threshold: 7)
+
+        total_discount_2 = (invoice_item15.unit_price * 0.20 * 5) + (invoice_item16.unit_price * 0.20 * 8) + (invoice_item17.unit_price * 0.20 * 8)
+
+        expect(invoice1.total_discounts).to eq(total_discount_2)
+      end
+    end
+
+    describe '#discounted_revenue' do
+      it 'returns the total discounted revenue for an invoice' do
+        merchant1.bulk_discounts.create!(percent_discount: 20, quantity_threshold: 5)
+        merchant2.bulk_discounts.create!(percent_discount:10, quantity_threshold: 3)
+
+        invoice_item15 = create(:invoice_item, invoice: invoice1, item: item2, status: 0, quantity: 5)
+        invoice_item16 = create(:invoice_item, invoice: invoice1, item: item3, status: 0, quantity: 8)
+        invoice_item17 = create(:invoice_item, invoice: invoice1, item: item6, status: 0, quantity: 8)
+
+        total_revenue = (invoice_item1.unit_price * invoice_item1.quantity) + (invoice_item15.unit_price * invoice_item15.quantity) + (invoice_item16.unit_price * invoice_item16.quantity) + (invoice_item17.unit_price * invoice_item17.quantity)
+        total_discount = (invoice_item15.unit_price * 0.20 * 5) + (invoice_item16.unit_price * 0.20 * 8) + (invoice_item17.unit_price * 0.10 * 8)
+        discounted_revenue = total_revenue - total_discount
+        
+        expect(invoice1.discounted_revenue).to eq(discounted_revenue)
+
+        merchant2.bulk_discounts.create!(percent_discount:20, quantity_threshold: 7)
+
+        total_discount_2 = (invoice_item15.unit_price * 0.20 * 5) + (invoice_item16.unit_price * 0.20 * 8) + (invoice_item17.unit_price * 0.20 * 8)
+        discounted_revenue = total_revenue - total_discount_2
+
+        expect(invoice1.discounted_revenue).to eq(discounted_revenue)
       end
     end
   end
