@@ -1,6 +1,8 @@
 require 'rails_helper' 
 
 describe 'As a Merchant', type: :feature do
+  let!(:upcoming_holidays) { HolidaySearch.new.upcoming_holidays }
+
   before(:each) do
     @merchant_1 = create(:merchant)
     @merchant_2 = create(:merchant)
@@ -112,8 +114,6 @@ describe 'As a Merchant', type: :feature do
     end
 
     it 'I see a section with a header of Upcoming Holidays and the name/date of the next 3 US holidays' do
-      upcoming_holidays = HolidaySearch.new.upcoming_holidays
-
       visit merchant_bulk_discounts_path(@merchant_1)
 
       within '#upcoming_holidays' do
@@ -122,6 +122,32 @@ describe 'As a Merchant', type: :feature do
         expect(page).to have_content("#{upcoming_holidays.second.name} - #{upcoming_holidays.second.date}")
         expect(page).to have_content("#{upcoming_holidays.last.name} - #{upcoming_holidays.last.date}")
       end
+    end
+
+    it 'In the Holiday Discounts section, I see a create discount button next to each of the 3 upcoming holidays' do
+      visit merchant_bulk_discounts_path(@merchant_1)
+
+      within "##{upcoming_holidays.first.name.gsub(/\s+/, "")}" do
+        expect(page).to have_link("Create Discount", href: "/merchants/#{@merchant_1.id}/bulk_discounts/new?holiday=#{upcoming_holidays.first.name}")
+      end
+
+      within "##{upcoming_holidays.second.name.gsub(/\s+/, "")}" do
+        expect(page).to have_link("Create Discount", href: "/merchants/#{@merchant_1.id}/bulk_discounts/new?holiday=#{upcoming_holidays.second.name}")
+      end
+
+      within "##{upcoming_holidays.third.name.gsub(/\s+/, "")}" do
+        expect(page).to have_link("Create Discount", href: "/merchants/#{@merchant_1.id}/bulk_discounts/new?holiday=#{upcoming_holidays.third.name}")
+      end
+    end
+
+    it 'When I click on the button, I am taken to a new discount form' do
+      visit merchant_bulk_discounts_path(@merchant_1)
+
+      within "##{upcoming_holidays.first.name.gsub(/\s+/, "")}" do
+        click_link "Create Discount"
+      end
+
+      expect(current_path).to eq(new_merchant_bulk_discount_path(@merchant_1))
     end
   end
 end

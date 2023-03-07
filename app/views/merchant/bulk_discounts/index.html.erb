@@ -16,16 +16,25 @@
     <% end %>
   </table>
 </div>
-
-<div id="upcoming_holidays">
-  <h2>Upcoming Holidays</h2>
-  <ul>
-    <% @upcoming_holidays.each do |holiday| %>
-      <li><h4><%= holiday.name %> - <%= holiday.date %></h4></li>
-    <% end %>
-  </ul>
-</div>
+<br>
 
 <div id="add_discount">
   <%= link_to "Create a New Discount", new_merchant_bulk_discount_path(@merchant) %>
+</div>
+
+<div id="upcoming_holidays">
+  <h2>Upcoming Holidays</h2>
+  <table class="table">
+    <tr>
+      <th class="th1">Holiday</th>
+      <th class="th1">Discount</th>
+    </tr>
+
+    <% @upcoming_holidays.each do |holiday| %>
+        <tr id=<%= holiday.name.gsub(/\s+/, "") %>>
+          <td class="td"><h4><%= holiday.name %> - <%= holiday.date %></h4></td>
+          <td class="td"><%= link_to "Create Discount", "/merchants/#{@merchant.id}/bulk_discounts/new?holiday=#{holiday.name}" %>
+        </tr>
+    <% end %>
+  </table>
 </div>
