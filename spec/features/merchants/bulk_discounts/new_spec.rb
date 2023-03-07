@@ -20,6 +20,7 @@ describe 'As a Merchant', type: :feature do
     it 'I see a form to add a new bulk discount' do
       visit "/merchants/#{@merchant_1.id}/bulk_discounts/new"
 
+      expect(page).to have_field :bulk_discount_name
       expect(page).to have_field :bulk_discount_percent_discount
       expect(page).to have_field :bulk_discount_quantity_threshold
       expect(page).to have_button 'Add Discount'
@@ -41,7 +42,7 @@ describe 'As a Merchant', type: :feature do
       click_button "Add Discount"
 
       expect(current_path).to eq(new_merchant_bulk_discount_path(@merchant_1))
-      expect(page).to have_content("Quantity threshold can't be blank, Quantity threshold is not a number")
+      expect(page).to have_content("Quantity threshold can't be blank, Quantity threshold is not a number, Name can't be blank")
     end
 
     it 'When I fill in the form with the incorrect data type and submit, I get a message stating what I need to fix' do
@@ -58,6 +59,7 @@ describe 'As a Merchant', type: :feature do
     it 'When I fill in the form with valid data and submit, I am redirected to the bulk discount index where I see my new bulk discount listed' do
       visit "/merchants/#{@merchant_1.id}/bulk_discounts/new"
 
+      fill_in :bulk_discount_name, with: '20off4'
       fill_in :bulk_discount_percent_discount, with: 25
       fill_in :bulk_discount_quantity_threshold, with: 5
       click_button "Add Discount"

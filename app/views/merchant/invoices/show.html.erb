@@ -1,5 +1,5 @@
-<h3><%= @merchant.name %></h3>
-<h4>Invoice #<%= @invoice.id %></h4>
+<h2><%= @merchant.name %></h2>
+<h3>Invoice #<%= @invoice.id %></h3>
 <p>Status: <%= @invoice.status %></p>
 <p>Created on: <%= @invoice.created_at.strftime("%A, %B %d, %Y") %></p>
 
@@ -17,29 +17,28 @@
 </div>
 
 <h3>Items on this invoice:</h3>
-<table>
+<table class="table">
   <tr>
-    <th>Item Name</th>
-    <th>Quantity</th>
-    <th>Unit Price</th>
-    <th>Applied Bulk Discount</th>
-    <th>Status</th>
+    <th class="th1">Item Name</th>
+    <th class="th1">Quantity</th>
+    <th class="th1">Unit Price</th>
+    <th class="th1">Applied Bulk Discount</th>
+    <th class="th1">Status</th>
   </tr>
   
-  <tr>
-    <%@invoice.invoice_items.each do |invoice_item|%>   
-       
-      <td><%= invoice_item.item.name %></td>
-      <td><%= invoice_item.quantity %></td>
-      <td><%= (number_to_currency(invoice_item.unit_price.to_f/100)) %></td>
-      <td>
-      <div id="bulk_discount<%= invoice_item.id %>"> 
-      <% if !invoice_item.list_bulk_discount.nil? %> 
-        <%= link_to "Bulk Discount #{invoice_item.list_bulk_discount.id}", merchant_bulk_discount_path(@merchant, invoice_item.list_bulk_discount) %></td>
-      <% end %>
-      </div>
+  <%@invoice.invoice_items.each do |invoice_item|%>
+    <tr>   
+      <td class="td"><%= invoice_item.item.name %></td>
+      <td class="td"><%= invoice_item.quantity %></td>
+      <td class="td"><%= (number_to_currency(invoice_item.unit_price.to_f/100)) %></td>
+      <td class="td">
+        <div id="bulk_discount<%= invoice_item.id %>"> 
+          <% if !invoice_item.list_bulk_discount.nil? %> 
+            <%= link_to "#{invoice_item.list_bulk_discount.name}", merchant_bulk_discount_path(@merchant, invoice_item.list_bulk_discount) %></td>
+          <% end %>
+        </div>
       </td>
-      <td>
+      <td class="td">
         <div id=<%= invoice_item.id %>>  
           <%= form_with url: "/merchants/#{@merchant.id}/invoices/#{@invoice.id}", method: :patch, local: true do |form| %>
             <%= form.select :status, ['pending', 'packaged', 'shipped'], selected:invoice_item.status %>
@@ -48,6 +47,6 @@
           <% end %>
         </div>
       </td>
-  </tr>
-    <% end %>
+    </tr>
+  <% end %>
 </table>

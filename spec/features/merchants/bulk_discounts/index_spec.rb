@@ -1,6 +1,5 @@
 require 'rails_helper' 
 
-
 describe 'As a Merchant', type: :feature do
   before(:each) do
     @merchant_1 = create(:merchant)
@@ -25,27 +24,45 @@ describe 'As a Merchant', type: :feature do
     it 'I see all of my bulk discounts including their percentage discount and quantity thresholds' do
       visit merchant_bulk_discounts_path(@merchant_1)
 
-      within '#bulk_discounts' do 
+      within "##{@bulk_discount_1.id}" do 
         expect(page).to have_content("#{@bulk_discount_1.percent_discount}% off #{@bulk_discount_1.quantity_threshold} items")
-        expect(page).to have_content("#{@bulk_discount_2.percent_discount}% off #{@bulk_discount_2.quantity_threshold} items")
-        expect(page).to have_content("#{@bulk_discount_3.percent_discount}% off #{@bulk_discount_3.quantity_threshold} items")
-        expect(page).to have_content("#{@bulk_discount_4.percent_discount}% off #{@bulk_discount_4.quantity_threshold} items")
-        expect(page).to_not have_content("#{@bulk_discount_5.percent_discount}% off #{@bulk_discount_5.quantity_threshold} items")
       end
+
+      within "##{@bulk_discount_2.id}" do 
+        expect(page).to have_content("#{@bulk_discount_2.percent_discount}% off #{@bulk_discount_2.quantity_threshold} items")
+      end
+
+      within "##{@bulk_discount_3.id}" do 
+        expect(page).to have_content("#{@bulk_discount_3.percent_discount}% off #{@bulk_discount_3.quantity_threshold} items")
+      end
+
+      within "##{@bulk_discount_4.id}" do 
+        expect(page).to have_content("#{@bulk_discount_4.percent_discount}% off #{@bulk_discount_4.quantity_threshold} items")
+      end
+
+      expect(page).to_not have_content("#{@bulk_discount_5.percent_discount}% off #{@bulk_discount_5.quantity_threshold} items")
     end
 
     it 'each discount includes a link to its show page' do
       visit merchant_bulk_discounts_path(@merchant_1)
 
-      within '#bulk_discounts' do
-        expect(page).to have_link("#{@bulk_discount_1.id}")
-        expect(page).to have_link("#{@bulk_discount_2.id}")
-        expect(page).to have_link("#{@bulk_discount_3.id}")
-        expect(page).to have_link("#{@bulk_discount_4.id}")
-        expect(page).to_not have_link("#{@bulk_discount_5.id}")
-
-        click_link "#{@bulk_discount_1.id}"
+      within "##{@bulk_discount_1.id}" do 
+        expect(page).to have_link("#{@bulk_discount_1.name}")
       end
+
+      within "##{@bulk_discount_2.id}" do 
+        expect(page).to have_link("#{@bulk_discount_2.name}")
+      end
+
+      within "##{@bulk_discount_3.id}" do 
+        expect(page).to have_link("#{@bulk_discount_3.name}")
+      end
+
+      within "##{@bulk_discount_4.id}" do 
+        expect(page).to have_link("#{@bulk_discount_4.name}")
+      end
+
+      click_link "#{@bulk_discount_1.name}"
 
       expect(current_path).to eq("/merchants/#{@merchant_1.id}/bulk_discounts/#{@bulk_discount_1.id}")
     end
@@ -64,31 +81,34 @@ describe 'As a Merchant', type: :feature do
     it 'Next to each bulk discount I see a link to delete it' do
       visit merchant_bulk_discounts_path(@merchant_1)
 
-      within '#bulk_discounts' do
-        expect(page).to have_link("Delete #{@bulk_discount_1.id}")
-        expect(page).to have_link("Delete #{@bulk_discount_2.id}")
-        expect(page).to have_link("Delete #{@bulk_discount_3.id}")
-        expect(page).to have_link("Delete #{@bulk_discount_4.id}")
+      within "##{@bulk_discount_1.id}" do 
+        expect(page).to have_link("Delete #{@bulk_discount_1.name}")
+      end
+
+      within "##{@bulk_discount_2.id}" do 
+        expect(page).to have_link("Delete #{@bulk_discount_2.name}")
+      end
+
+      within "##{@bulk_discount_3.id}" do 
+        expect(page).to have_link("Delete #{@bulk_discount_3.name}")
+      end
+
+      within "##{@bulk_discount_4.id}" do 
+        expect(page).to have_link("Delete #{@bulk_discount_4.name}")
       end
     end
     
     it 'When I click the delete link, I am redirected back to the bulk discounts index page and I no longer see the discount listed' do
       visit merchant_bulk_discounts_path(@merchant_1)
 
-      within '#bulk_discounts' do
+      within "##{@bulk_discount_2.id}" do 
         expect(page).to have_content("#{@bulk_discount_2.percent_discount}% off #{@bulk_discount_2.quantity_threshold} items")
       
-        click_link "Delete #{@bulk_discount_2.id}"
+        click_link "Delete #{@bulk_discount_2.name}"
       end
 
       expect(current_path).to eq(merchant_bulk_discounts_path(@merchant_1))
-      
-      within '#bulk_discounts' do
-        expect(page).to have_content("#{@bulk_discount_1.percent_discount}% off #{@bulk_discount_1.quantity_threshold} items")
-        expect(page).to have_content("#{@bulk_discount_3.percent_discount}% off #{@bulk_discount_3.quantity_threshold} items")
-        expect(page).to have_content("#{@bulk_discount_4.percent_discount}% off #{@bulk_discount_4.quantity_threshold} items")
-        expect(page).to_not have_content("#{@bulk_discount_2.percent_discount}% off #{@bulk_discount_2.quantity_threshold} items")
-      end
+      expect(page).to_not have_content("#{@bulk_discount_2.percent_discount}% off #{@bulk_discount_2.quantity_threshold} items")
     end
 
     it 'I see a section with a header of Upcoming Holidays and the name/date of the next 3 US holidays' do

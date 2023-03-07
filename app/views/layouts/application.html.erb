@@ -5,9 +5,24 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     <style>
-    table, th, td {
-      border: 1px solid black;
+    .table {
+      font-family: arial, sans-serif;
       border-collapse: collapse;
+      width: 100%;
+    }
+
+    .td {
+      border: 1px solid #000000;
+      text-align: left;
+      padding: 8px;
+    }
+
+    .th1 {
+      background-color: #8D8F8F;
+      border: 1px solid #dddddd;
+      text-align: center;
+      padding: 4px;
+      color: #ffffff
     }
     </style>
     <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload' %>

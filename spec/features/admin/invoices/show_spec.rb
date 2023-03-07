@@ -23,6 +23,13 @@ describe 'As an admin', type: :feature do
 
   let!(:invoice_item2) { create(:invoice_item, invoice: invoice2, item: item2) }
   
+  before(:each) do
+    merchant1.bulk_discounts.create!(percent_discount: 10, quantity_threshold: 3, name: '10off3')
+    merchant1.bulk_discounts.create!(percent_discount: 15, quantity_threshold: 5, name: '15 off 5')
+
+    merchant2.bulk_discounts.create!(percent_discount: 10, quantity_threshold: 4, name: '10off4')
+  end
+
   describe "When I visit an admin invoice show page" do
     it 'I see the invoice ID, status, and created_at date with formatting' do
       visit "/admin/invoices/#{invoice1.id}"
@@ -107,18 +114,13 @@ describe 'As an admin', type: :feature do
       visit "/admin/invoices/#{invoice1.id}"
 
       within "#total_revenue" do
-        expect(page).to have_content("$#{(total_revenue/100.0).round(2)}")
+        expect(page).to have_content("Total Revenue: $#{(total_revenue/100.0).round(2)}")
       end
     end
 
     it "I see the total discounted revenue from this invoice" do
       item6 = create(:item, merchant: merchant2)
       invoice_item6 = create(:invoice_item, invoice: invoice1, item: item6, quantity: 4)
-
-      merchant1.bulk_discounts.create!(percent_discount: 10, quantity_threshold: 3)
-      merchant1.bulk_discounts.create!(percent_discount: 15, quantity_threshold: 5)
-
-      merchant2.bulk_discounts.create!(percent_discount: 10, quantity_threshold: 4)
 
       total_revenue = (invoice_item1.unit_price * invoice_item1.quantity) + (invoice_item3.unit_price * invoice_item3.quantity) + (invoice_item4.unit_price * invoice_item4.quantity) + (invoice_item5.unit_price * invoice_item5.quantity) + (invoice_item6.unit_price * invoice_item6.quantity)
       total_discount = (invoice_item3.unit_price * 0.10 * invoice_item3.quantity) +  (invoice_item4.unit_price * 0.10 * invoice_item4.quantity) + (invoice_item5.unit_price * 0.15 *invoice_item5.quantity) + (invoice_item6.unit_price * 0.10 * invoice_item6.quantity)
@@ -127,7 +129,7 @@ describe 'As an admin', type: :feature do
       visit "/admin/invoices/#{invoice1.id}"
 
       within "#discounted_revenue" do
-        expect(page).to have_content("$#{(discounted_revenue/100.0).round(2)}")
+        expect(page).to have_content("Discounted Revenue: $#{(discounted_revenue/100.0).round(2)}")
       end
     end
   end

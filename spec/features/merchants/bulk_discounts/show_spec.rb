@@ -12,7 +12,7 @@ describe 'As a merchant', type: :feature do
     it 'links from the merchant bulk discount index page' do
       visit merchant_bulk_discounts_path(@merchant_1)
 
-      click_link "#{@bulk_discount_2.id}"
+      click_link "#{@bulk_discount_2.name}"
 
       expect(current_path).to eq(merchant_bulk_discount_path(@merchant_1, @bulk_discount_2))
     end

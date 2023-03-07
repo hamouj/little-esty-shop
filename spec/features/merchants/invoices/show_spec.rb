@@ -16,6 +16,9 @@ describe 'As a merchant', type: :feature do
   let!(:invoice1) { create(:invoice, created_at: Date.new(2020, 1, 2), customer: customer1) }
   let!(:invoice2) { create(:invoice, created_at: Date.new(2019, 3, 9), customer: customer2) }
 
+  let!(:bulk_discount_1) { merchant1.bulk_discounts.create!(percent_discount: 10, quantity_threshold: 3, name: '10off3') }
+  let!(:bulk_discount_2) { merchant1.bulk_discounts.create!(percent_discount: 15, quantity_threshold: 5, name: '15off5') }
+
   before(:each) do
     @invoice_item1 = create(:invoice_item, invoice: invoice1, item: item1, quantity: 2)
     @invoice_item2 = create(:invoice_item, invoice: invoice1, item: item2, quantity: 3)
@@ -111,8 +114,6 @@ describe 'As a merchant', type: :feature do
     it 'shows the total discounted revenue for my merchant from this invoice' do
       item6 = create(:item, merchant: merchant2)
       invoice_item6 = create(:invoice_item, invoice: invoice1, item: item6)
-      merchant1.bulk_discounts.create!(percent_discount: 10, quantity_threshold: 3)
-      merchant1.bulk_discounts.create!(percent_discount: 15, quantity_threshold: 5)
 
       total_revenue = (@invoice_item1.unit_price * @invoice_item1.quantity) + (@invoice_item2.unit_price * @invoice_item2.quantity) + (@invoice_item3.unit_price * @invoice_item3.quantity) + (@invoice_item4.unit_price * @invoice_item4.quantity)
       total_discount = (@invoice_item2.unit_price * 0.10 * @invoice_item2.quantity) + (@invoice_item3.unit_price * 0.15 * @invoice_item3.quantity) + (@invoice_item4.unit_price * 0.15 * @invoice_item4.quantity)
@@ -126,9 +127,6 @@ describe 'As a merchant', type: :feature do
     end
 
     it 'next to each invoice item I see a link to the show page for the bulk discount that was applied (if any)' do
-      bulk_discount1 = merchant1.bulk_discounts.create!(percent_discount: 10, quantity_threshold: 3)
-      bulk_discount2 = merchant1.bulk_discounts.create!(percent_discount: 15, quantity_threshold: 5)
-
       visit "/merchants/#{merchant1.id}/invoices/#{invoice1.id}"
 
       within "#bulk_discount#{@invoice_item1.id}" do
@@ -136,15 +134,15 @@ describe 'As a merchant', type: :feature do
       end
 
       within "#bulk_discount#{@invoice_item2.id}" do
-        expect(page).to have_link("Bulk Discount #{bulk_discount1.id}", href: merchant_bulk_discount_path(merchant1, bulk_discount1))
+        expect(page).to have_link(bulk_discount_1.name, href: merchant_bulk_discount_path(merchant1, bulk_discount_1))
       end
 
       within "#bulk_discount#{@invoice_item3.id}" do
-        expect(page).to have_link("Bulk Discount #{bulk_discount2.id}", href: merchant_bulk_discount_path(merchant1, bulk_discount2))
+        expect(page).to have_link(bulk_discount_2.name, href: merchant_bulk_discount_path(merchant1, bulk_discount_2))
       end
 
       within "#bulk_discount#{@invoice_item4.id}" do
-        expect(page).to have_link("Bulk Discount #{bulk_discount2.id}", href: merchant_bulk_discount_path(merchant1, bulk_discount2))
+        expect(page).to have_link(bulk_discount_2.name, href: merchant_bulk_discount_path(merchant1, bulk_discount_2))
       end
     end
   end
