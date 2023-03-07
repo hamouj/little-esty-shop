@@ -51,6 +51,6 @@ class Merchant::BulkDiscountsController < ApplicationController
 
 private
   def bulk_discount_params
-    params.require(:bulk_discount).permit(:percent_discount, :quantity_threshold, :merchant_id)
+    params.require(:bulk_discount).permit(:percent_discount, :quantity_threshold, :name, :merchant_id)
   end
 end

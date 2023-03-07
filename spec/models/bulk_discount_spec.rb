@@ -9,5 +9,6 @@ describe BulkDiscount, type: :model do
     it { should validate_numericality_of :percent_discount }
     it { should validate_presence_of :quantity_threshold }
     it { should validate_numericality_of :quantity_threshold }
+    it { should validate_presence_of :name }
   end
 end
