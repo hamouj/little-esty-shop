@@ -26,7 +26,7 @@ RSpec.describe InvoiceItem, type: :model do
     let!(:invoice_item3) { create(:invoice_item, invoice: invoice2, item: item2, status: 1, quantity: 7) }
     let!(:invoice_item4) { create(:invoice_item, invoice: invoice2, item: item3, status: 2, quantity: 5) }
 
-    let!(:bulk_discount1) { BulkDiscount.create!(percent_discount: 10, quantity_threshold: 5, merchant: merchant1) }
+    let!(:bulk_discount1) { BulkDiscount.create!(percent_discount: 10, quantity_threshold: 5, merchant: merchant1, name: '10off5') }
 
     describe '#list_bulk_discount' do
       it 'returns the bulk discount used for the invoice_item, if any' do
@@ -34,7 +34,7 @@ RSpec.describe InvoiceItem, type: :model do
 
         expect(invoice_item2.list_bulk_discount).to eq(bulk_discount1)
 
-        bulk_discount2 = BulkDiscount.create!(percent_discount: 20, quantity_threshold: 5, merchant: merchant1)
+        bulk_discount2 = BulkDiscount.create!(percent_discount: 20, quantity_threshold: 5, merchant: merchant1, name: '20off5')
 
         expect(invoice_item2.list_bulk_discount).to eq(bulk_discount2)
       end
