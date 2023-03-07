@@ -1,2 +1,7 @@
 <h1>Edit <%= @bulk_discount.name %></h1>
-<%= render partial: 'bulk_discount_form', locals: { button_name: "Edit Discount" } %>
+  <%= render partial: 'bulk_discount_form', locals:{
+                                                name: @bulk_discount.name,
+                                                percent_discount: @bulk_discount.percent_discount,
+                                                quantity_threshold: @bulk_discount.quantity_threshold,
+                                                button_name: "Edit Discount"
+                                                } %>
