@@ -49,7 +49,7 @@ describe 'As a merchant', type: :feature do
 
     it 'When I change NONE of the information and click submit, I am redirected to the bulk discount show page and I see that the attributes have not changed' do
       visit edit_merchant_bulk_discount_path(@merchant_1, @bulk_discount_1)
-save_and_open_page
+
       click_button "Edit Discount"
 
       expect(page).to have_content("#{@bulk_discount_1.percent_discount}% off #{@bulk_discount_1.quantity_threshold} items")
