@@ -8,7 +8,7 @@
     <link href='https://fonts.googleapis.com/css?family=Akshar' rel='stylesheet'>
     <style>
     .table {
-      font-family: arial, sans-serif;
+      font-family: 'Akshar', arial, sans-serif;
       border-collapse: collapse;
       width: 100%;
     }
@@ -26,14 +26,9 @@
       padding: 4px;
       color: #ffffff
     }
-    </style>
-    <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload' %>
-    <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
-    <style>
 
       body {
-        font-family: 'Akshar';
-        font-size: 22px;
+        font-family: 'Akshar', arial, sans-serif;
         text_align: center;
       }
 
@@ -56,7 +51,9 @@
         flex: 50%;
         padding: 10px;
       }
-      </style>
+    </style>
+    <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+    <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
   </head>
 
   <body> 
@@ -67,7 +64,7 @@
     <% end %>
 
     <h1>Little Esty Shop</h1>
-    <%= link_to 'Merchants', merchants_path %>
+    <%= link_to 'Home', root_path %>
 
     <%= yield %>
   </body> 
