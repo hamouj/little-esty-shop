@@ -1,27 +1,35 @@
 require 'rails_helper'
 
-describe 'As a merchant', type: :feature do
-  let!(:merchant1) { create(:merchant)}
+describe 'As an admin', type: :feature do
+  let!(:merchant1) { create(:merchant) }
+  let!(:merchant2) { create(:merchant) }
 
-  let!(:item1) {create(:item, merchant: merchant1)}  
-  let!(:item2) {create(:item, merchant: merchant1)}
-  let!(:item3) {create(:item, merchant: merchant1)}
-  let!(:item4) {create(:item, merchant: merchant1)}
-  let!(:item5) {create(:item, merchant: merchant1)}
+  let!(:item1) { create(:item, merchant: merchant1) }  
+  let!(:item2) { create(:item, merchant: merchant1) }
+  let!(:item3) { create(:item, merchant: merchant1) }
+  let!(:item4) { create(:item, merchant: merchant1) }
+  let!(:item5) { create(:item, merchant: merchant1) }
 
-  let!(:customer1) {create(:customer)}
-  let!(:customer2) {create(:customer)}
+  let!(:customer1) { create(:customer) }
+  let!(:customer2) { create(:customer) }
 
-  let!(:invoice1) {create(:invoice, created_at: Date.new(2020, 1, 2), customer: customer1)}
-  let!(:invoice2) {create(:invoice, created_at: Date.new(2019, 3, 9), customer: customer2)}
+  let!(:invoice1) { create(:invoice, created_at: Date.new(2020, 1, 2), customer: customer1) }
+  let!(:invoice2) { create(:invoice, created_at: Date.new(2019, 3, 9), customer: customer2) }
 
-  let!(:invoice_item1) { create(:invoice_item, invoice: invoice1, item: item1) }
+  let!(:invoice_item1) { create(:invoice_item, invoice: invoice1, item: item1, quantity: 1) }
+  let!(:invoice_item3) { create(:invoice_item, invoice: invoice1, item: item3, quantity: 3) }
+  let!(:invoice_item4) { create(:invoice_item, invoice: invoice1, item: item4, quantity: 4) }
+  let!(:invoice_item5) { create(:invoice_item, invoice: invoice1, item: item5, quantity: 5) }
+
   let!(:invoice_item2) { create(:invoice_item, invoice: invoice2, item: item2) }
-  let!(:invoice_item3) { create(:invoice_item, invoice: invoice1, item: item3) }
-  let!(:invoice_item4) { create(:invoice_item, invoice: invoice1, item: item4) }
-  let!(:invoice_item5) { create(:invoice_item, invoice: invoice1, item: item5) }
-
   
+  before(:each) do
+    merchant1.bulk_discounts.create!(percent_discount: 10, quantity_threshold: 3, name: '10off3')
+    merchant1.bulk_discounts.create!(percent_discount: 15, quantity_threshold: 5, name: '15 off 5')
+
+    merchant2.bulk_discounts.create!(percent_discount: 10, quantity_threshold: 4, name: '10off4')
+  end
+
   describe "When I visit an admin invoice show page" do
     it 'I see the invoice ID, status, and created_at date with formatting' do
       visit "/admin/invoices/#{invoice1.id}"
@@ -75,16 +83,6 @@ describe 'As a merchant', type: :feature do
       end
     end
 
-    it "I see the total revenue that will be generated from this invoice" do
-      total_revenue = (invoice_item1.unit_price * invoice_item1.quantity) + (invoice_item3.unit_price * invoice_item3.quantity) + (invoice_item4.unit_price * invoice_item4.quantity) + (invoice_item5.unit_price * invoice_item5.quantity)
-      
-      visit "/admin/invoices/#{invoice1.id}"
-
-      within "#total_revenue" do
-        expect(page).to have_content("$#{total_revenue.to_f/100}")
-      end
-    end
-
     it "I see the invoice status is a select field and next to the select field I see a button to 'Update Invoice Status'" do
       visit "/admin/invoices/#{invoice1.id}"
 
@@ -108,6 +106,31 @@ describe 'As a merchant', type: :feature do
       click_button 'Update Invoice Status'
 
       expect(page).to have_select('Status', :selected=> "cancelled")
+    end
+
+    it "I see the total revenue that will be generated from this invoice" do
+      total_revenue = (invoice_item1.unit_price * invoice_item1.quantity) + (invoice_item3.unit_price * invoice_item3.quantity) + (invoice_item4.unit_price * invoice_item4.quantity) + (invoice_item5.unit_price * invoice_item5.quantity)
+      
+      visit "/admin/invoices/#{invoice1.id}"
+
+      within "#total_revenue" do
+        expect(page).to have_content("Total Revenue: $#{(total_revenue/100.0).round(2)}")
+      end
+    end
+
+    it "I see the total discounted revenue from this invoice" do
+      item6 = create(:item, merchant: merchant2)
+      invoice_item6 = create(:invoice_item, invoice: invoice1, item: item6, quantity: 4)
+
+      total_revenue = (invoice_item1.unit_price * invoice_item1.quantity) + (invoice_item3.unit_price * invoice_item3.quantity) + (invoice_item4.unit_price * invoice_item4.quantity) + (invoice_item5.unit_price * invoice_item5.quantity) + (invoice_item6.unit_price * invoice_item6.quantity)
+      total_discount = (invoice_item3.unit_price * 0.10 * invoice_item3.quantity) +  (invoice_item4.unit_price * 0.10 * invoice_item4.quantity) + (invoice_item5.unit_price * 0.15 *invoice_item5.quantity) + (invoice_item6.unit_price * 0.10 * invoice_item6.quantity)
+      discounted_revenue = total_revenue - total_discount
+  
+      visit "/admin/invoices/#{invoice1.id}"
+
+      within "#discounted_revenue" do
+        expect(page).to have_content("Discounted Revenue: $#{(discounted_revenue/100.0).round(2)}")
+      end
     end
   end
 end

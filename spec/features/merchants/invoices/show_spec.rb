@@ -2,24 +2,28 @@ require 'rails_helper'
 
 describe 'As a merchant', type: :feature do
   let!(:merchant1) { create(:merchant)}
+  let!(:merchant2) { create(:merchant) }
 
-  let!(:item1) {create(:item, merchant: merchant1)}  
-  let!(:item2) {create(:item, merchant: merchant1)}
-  let!(:item3) {create(:item, merchant: merchant1)}
-  let!(:item4) {create(:item, merchant: merchant1)}
-  let!(:item5) {create(:item, merchant: merchant1)}
+  let!(:item1) { create(:item, merchant: merchant1) }  
+  let!(:item2) { create(:item, merchant: merchant1) }
+  let!(:item3) { create(:item, merchant: merchant1) }
+  let!(:item4) { create(:item, merchant: merchant1) }
+  let!(:item5) { create(:item, merchant: merchant1) }
 
-  let!(:customer1) {create(:customer)}
-  let!(:customer2) {create(:customer)}
+  let!(:customer1) { create(:customer) }
+  let!(:customer2) { create(:customer) }
 
-  let!(:invoice1) {create(:invoice, created_at: Date.new(2020, 1, 2), customer: customer1)}
-  let!(:invoice2) {create(:invoice, created_at: Date.new(2019, 3, 9), customer: customer2)}
+  let!(:invoice1) { create(:invoice, created_at: Date.new(2020, 1, 2), customer: customer1) }
+  let!(:invoice2) { create(:invoice, created_at: Date.new(2019, 3, 9), customer: customer2) }
+
+  let!(:bulk_discount_1) { merchant1.bulk_discounts.create!(percent_discount: 10, quantity_threshold: 3, name: '10off3') }
+  let!(:bulk_discount_2) { merchant1.bulk_discounts.create!(percent_discount: 15, quantity_threshold: 5, name: '15off5') }
 
   before(:each) do
-    @invoice_item1 = create(:invoice_item, invoice: invoice1, item: item1)
-    @invoice_item2 = create(:invoice_item, invoice: invoice1, item: item2)
-    @invoice_item3 = create(:invoice_item, invoice: invoice1, item: item3)
-    @invoice_item4 = create(:invoice_item, invoice: invoice1, item: item4)
+    @invoice_item1 = create(:invoice_item, invoice: invoice1, item: item1, quantity: 2)
+    @invoice_item2 = create(:invoice_item, invoice: invoice1, item: item2, quantity: 3)
+    @invoice_item3 = create(:invoice_item, invoice: invoice1, item: item3, quantity: 5)
+    @invoice_item4 = create(:invoice_item, invoice: invoice1, item: item4, quantity: 7)
     @invoice_item5 = create(:invoice_item, invoice: invoice2, item: item5)
   end
 
@@ -44,6 +48,7 @@ describe 'As a merchant', type: :feature do
 
     it "I see all of my items on the invoice including: item name, quantity of item ordered, the price sold for, the invoice item status" do
       visit "/merchants/#{merchant1.id}/invoices/#{invoice1.id}"
+
       expect(page).to have_content("Items on this invoice")
       expect(page).to have_content("Item Name")
       expect(page).to have_content("Quantity")
@@ -93,15 +98,52 @@ describe 'As a merchant', type: :feature do
       end
     end
 
-    it 'shows the total revenue that will be generated from all items on the invoice' do
+    it 'shows the total revenue for my merchant from this invoice' do
+      item6 = create(:item, merchant: merchant2)
+      invoice_item6 = create(:invoice_item, invoice: invoice1, item: item6)
+
       total_revenue = (@invoice_item1.unit_price * @invoice_item1.quantity) + (@invoice_item3.unit_price * @invoice_item3.quantity) + (@invoice_item4.unit_price * @invoice_item4.quantity) + (@invoice_item2.unit_price * @invoice_item2.quantity)
+      
       visit "/merchants/#{merchant1.id}/invoices/#{invoice1.id}"
       
-      
       within '#total_revenue' do
-        expect(page).to have_content("$#{total_revenue.to_f/100}")
+        expect(page).to have_content("Total Revenue: $#{(total_revenue/100.0).round(2)}")
+      end
+    end
+
+    it 'shows the total discounted revenue for my merchant from this invoice' do
+      item6 = create(:item, merchant: merchant2)
+      invoice_item6 = create(:invoice_item, invoice: invoice1, item: item6)
+
+      total_revenue = (@invoice_item1.unit_price * @invoice_item1.quantity) + (@invoice_item2.unit_price * @invoice_item2.quantity) + (@invoice_item3.unit_price * @invoice_item3.quantity) + (@invoice_item4.unit_price * @invoice_item4.quantity)
+      total_discount = (@invoice_item2.unit_price * 0.10 * @invoice_item2.quantity) + (@invoice_item3.unit_price * 0.15 * @invoice_item3.quantity) + (@invoice_item4.unit_price * 0.15 * @invoice_item4.quantity)
+      discounted_revenue = total_revenue - total_discount
+
+      visit "/merchants/#{merchant1.id}/invoices/#{invoice1.id}"
+
+      within '#discounted_revenue' do
+        expect(page).to have_content("Discounted Revenue: $#{(discounted_revenue/100.0).round(2)}")
+      end
+    end
+
+    it 'next to each invoice item I see a link to the show page for the bulk discount that was applied (if any)' do
+      visit "/merchants/#{merchant1.id}/invoices/#{invoice1.id}"
+
+      within "#bulk_discount#{@invoice_item1.id}" do
+        expect(page).to have_no_link
       end
 
+      within "#bulk_discount#{@invoice_item2.id}" do
+        expect(page).to have_link(bulk_discount_1.name, href: merchant_bulk_discount_path(merchant1, bulk_discount_1))
+      end
+
+      within "#bulk_discount#{@invoice_item3.id}" do
+        expect(page).to have_link(bulk_discount_2.name, href: merchant_bulk_discount_path(merchant1, bulk_discount_2))
+      end
+
+      within "#bulk_discount#{@invoice_item4.id}" do
+        expect(page).to have_link(bulk_discount_2.name, href: merchant_bulk_discount_path(merchant1, bulk_discount_2))
+      end
     end
   end
 end

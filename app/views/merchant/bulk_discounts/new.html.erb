@@ -1,0 +1,16 @@
+<h1>Add a Discount</h1>
+<% if params[:holiday].present? %>
+  <%= render partial: 'bulk_discount_form', locals: {
+                                                name: "#{params[:holiday]} discount",
+                                                percent_discount: 30,
+                                                quantity_threshold: 2,
+                                                button_name: "Add Discount"
+                                                } %>
+<% else %>
+  <%= render partial: 'bulk_discount_form', locals:{
+                                                name: @bulk_discount.name,
+                                                percent_discount: @bulk_discount.percent_discount,
+                                                quantity_threshold: @bulk_discount.quantity_threshold,
+                                                button_name: "Add Discount"
+                                                } %>
+<% end %>

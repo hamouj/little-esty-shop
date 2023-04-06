@@ -2,6 +2,8 @@
 <%= link_to "#{@merchant.name} Items", "/merchants/#{@merchant.id}/items" %>
 <br>
 <%= link_to "#{@merchant.name} Invoices", "/merchants/#{@merchant.id}/invoices" %>
+<br>
+<%= link_to "#{@merchant.name} Discounts", merchant_bulk_discounts_path(@merchant) %>
 
 <div class="row">
   <div class="column">

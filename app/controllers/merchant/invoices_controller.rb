@@ -8,6 +8,7 @@ class  Merchant::InvoicesController < ApplicationController
   def show
     @merchant = Merchant.find(params[:merchant_id])
     @invoice = Invoice.find(params[:id])
-    @items_on_invoice = @invoice.items
+    @total_revenue = @invoice.merchant_total_revenue(@merchant)
+    @discounted_revenue = @invoice.merchant_discounted_revenue(@merchant)
   end
 end
