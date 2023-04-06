@@ -1,22 +1,27 @@
-<h1><%= @merchant.name %></h1>
-<%= link_to 'Merchant Items', merchant_items_path(@merchant) %>
+<h3><%=@merchant.name%></h3>
+<%= link_to "#{@merchant.name} Items", "/merchants/#{@merchant.id}/items" %>
 <br>
-<%= link_to 'Merchant Invoices', merchant_invoices_path(@merchant) %>
+<%= link_to "#{@merchant.name} Invoices", "/merchants/#{@merchant.id}/invoices" %>
 <br>
-<%= link_to 'Merchant Discounts', merchant_bulk_discounts_path(@merchant) %>
+<%= link_to "#{@merchant.name} Discounts", merchant_bulk_discounts_path(@merchant) %>
 
-<h3><%="Top 5 customers with largest transactions" %></h3>
-<ul>
-  <% @merchant.top_five_customers.each do |customer| %>
-    <li><%= customer.first_name %> <%= customer.last_name %>- number of transactions: <%= @merchant.customer_successful_transactions(customer.id) %></li>
-  <%end%>
-</ul>
+<div class="row">
+  <div class="column">
+    <h3><%="Top 5 customers with largest transactions" %></h3>
+    <h4><%@merchant.top_five_customers.each do |customer|%></h4>
+    <p><%=customer.first_name%> <%=customer.last_name%>- number of transactions: <%=@merchant.customer_successful_transactions(customer.id)%></p>
+    <%end%>
+  </div>
 
-<h3>Items Ready to Ship</h3>
-<ul>
-  <% @invoices.invoice_items_not_shipped.each do |invoice| %>  
-      <% invoice.items.each do |item| %>
+
+  <div class="column">
+    <h3><%="Items Ready to Ship"%></h3>
+    <% @invoices.invoice_items_not_shipped.each do |invoice| %>  
+        <% invoice.items.each do |item| %>
+      <ul>
         <li><%= item.name %> - invoice # <%=link_to "#{invoice.id}", merchant_invoice_path(@merchant, invoice.id) %> - <%= invoice.created_at.strftime("%A, %B %d, %Y") %> </li>
+      </ul>
       <% end %>
-  <% end %>
-</ul>
+    <% end %>
+  </div>
+</div>

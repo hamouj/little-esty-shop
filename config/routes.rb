@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
+  root 'welcome#index'
 
   # Admin dashboard route
   resources :admin, only: :index
@@ -10,11 +11,7 @@ Rails.application.routes.draw do
 		resources :invoices, only: [:index, :show]
   end
 
-  patch '/admin/merchants/:id', to: "admin/merchants#update"
-  patch '/admin/invoices/:id', to: "admin/invoices#update"
-
-  # Merchant/items, merchant/invoices, merchant/bulk_discounts routes
-	resources :merchants, only: :show do
+	resources :merchants, only: [:index, :show] do
 		resources :items, except: :update, controller: 'merchant/items'
     resources :invoices, only: [:index, :show], controller: 'merchant/invoices'
     resources :bulk_discounts, except: :update, controller: 'merchant/bulk_discounts'
