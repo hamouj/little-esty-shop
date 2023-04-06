@@ -4,6 +4,16 @@
 ---
 "Little Esty Shop" is a group project that requires students to build a fictitious e-commerce platform where merchants and admins can manage inventory and fulfill customer invoices.
 
+### **Set-Up**
+---
+In the command line:
+- Run `bundle`
+- Run `rails csv_load:all`
+
+To run the application:
+- Run `rails s` in the command line
+- Open a browser tab and visit localhost:3000
+
 ### **Collaborators**
 ---
 - [Axel De La Guardia](https://github.com/axeldelaguardia)
