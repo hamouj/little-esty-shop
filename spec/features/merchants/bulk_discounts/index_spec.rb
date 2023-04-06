@@ -18,7 +18,7 @@ describe 'As a Merchant', type: :feature do
     it 'links from the merchant dashboard' do
       visit merchant_path(@merchant_1)
 
-      click_link "Merchant Discounts"
+      click_link "#{@merchant_1.name} Discounts"
 
       expect(current_path).to eq("/merchants/#{@merchant_1.id}/bulk_discounts")
     end

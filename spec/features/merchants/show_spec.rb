@@ -86,9 +86,9 @@ RSpec.describe 'merchant show dashboard page', type: :feature do
 
       visit "/merchants/#{merchant1.id}/dashboard"
 
-      expect(page).to have_link("Merchant Items")
+      expect(page).to have_link("#{merchant1.name} Items")
 
-      click_link("Merchant Items")
+      click_link("#{merchant1.name} Items")
 
       expect(current_path).to eq("/merchants/#{merchant1.id}/items")
     end
@@ -97,9 +97,9 @@ RSpec.describe 'merchant show dashboard page', type: :feature do
 
       visit "/merchants/#{merchant1.id}/dashboard"
 
-      expect(page).to have_link("Merchant Invoices")
+      expect(page).to have_link("#{merchant1.name} Invoices")
 
-      click_link("Merchant Invoices")
+      click_link("#{merchant1.name} Invoices")
 
       expect(current_path).to eq("/merchants/#{merchant1.id}/invoices")
     end 
@@ -170,13 +170,13 @@ RSpec.describe 'merchant show dashboard page', type: :feature do
     it 'has a link to view all discounts' do
       visit "/merchants/#{merchant1.id}/dashboard"
 
-      expect(page).to have_link("Merchant Discounts", href: "/merchants/#{merchant1.id}/bulk_discounts")
+      expect(page).to have_link("#{merchant1.name} Discounts", href: "/merchants/#{merchant1.id}/bulk_discounts")
     end
 
     it 'when I clikc the link to view all discounts, I am taken to my bulk discounts index page' do
       visit "/merchants/#{merchant1.id}/dashboard"
 
-      click_link "Merchant Discounts"
+      click_link "#{merchant1.name} Discounts"
 
       expect(current_path).to eq("/merchants/#{merchant1.id}/bulk_discounts")
     end
