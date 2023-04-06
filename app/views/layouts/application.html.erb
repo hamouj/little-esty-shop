@@ -5,8 +5,38 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
+    <link href='https://fonts.googleapis.com/css?family=Akshar' rel='stylesheet'>
+
     <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload' %>
     <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
+    <style>
+
+      body {
+        font-family: 'Akshar';
+        font-size: 22px;
+        text_align: center;
+      }
+
+      section {
+        height: 600px;
+        display: flex;
+        flex-direction: column;
+        flex-wrap: wrap;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      .row {
+        display: flex;
+      }
+
+      .column {
+        flex: 50%;
+        padding: 10px;
+      }
+      </style>
   </head>
 
   <body> 
@@ -15,6 +45,9 @@
 				<%= msg %>
 			</div>
     <% end %>
+
+    <h1>Little Esty Shop</h1>
+    <%= link_to 'Merchants', merchants_path %>
 
     <%= yield %>
   </body> 
