@@ -2,7 +2,7 @@
 
 ### **Description**
 ---
-Shop Spot is a fictitious e-commerce platform where merchants and admins can manage inventory and fulfill customer invoices and bulk discounts.
+Shop Spot is a fictitious e-commerce platform where merchants and admins can manage inventory, fulfill customer invoices, as well as create, update, and delete bulk discounts.
 
 ### **Set-Up**
 ---
